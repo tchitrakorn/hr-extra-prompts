@@ -5,7 +5,7 @@
   x filter
   x some
   x every
-  find
+  x find
   x sort
   NOTE: if the given prompts do not provide an immediate opportunity to use
   one of these higher order functions, create your own use case
@@ -311,7 +311,7 @@ var totalEarningsPerPerson = function(response) {
   return output; */
 
   // method 2: map
-  return response.data.map(person => {
+  /* return response.data.map(person => {
     var personSummary = {};
     var netEarning = 0;
     person.earnings.forEach(earning => {
@@ -322,11 +322,23 @@ var totalEarningsPerPerson = function(response) {
     personSummary.age = person.age;
     personSummary.earnings = person.earnings;
     return personSummary;
+  }); */
+
+  // method 3: map, reduce
+  var {data} = response;
+  return data.map(person => {
+    var accumulateEarning = (totalEarning, currentEarning) => {
+      totalEarning += currentEarning.amount;
+      return totalEarning;
+    };
+    person["net_earnings"] = person.earnings.reduce(accumulateEarning, 0); // for each person
+    return person;
   });
+
 };
 
 var peopleEarningsSummary = totalEarningsPerPerson(RESPONSE);
-// console.log('peopleEarningsSummary: ', peopleEarningsSummary);
+console.log('peopleEarningsSummary: ', peopleEarningsSummary);
 
 /**
 * STEP 3: Implement a function totalEearningsByReason to return a number representing
